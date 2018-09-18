@@ -2,22 +2,22 @@ package com.rabbitmq.demo.sender;
 
 import com.rabbitmq.demo.domain.User;
 import com.rabbitmq.demo.utils.JsonUtils;
-import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import static com.rabbitmq.demo.utils.JsonUtils.objectToJson;
 
 
 @RestController
 @RequestMapping("/mq")
 public class HelloSender {
 
-    @Autowired
-    private RabbitTemplate rabbitTemplate;
+    private final RabbitTemplate rabbitTemplate;
 
+    @Autowired
+    public HelloSender(RabbitTemplate rabbitTemplate) {
+        this.rabbitTemplate = rabbitTemplate;
+    }
 
     @RequestMapping("/sendusr")
     public User send() {
@@ -35,7 +35,7 @@ public class HelloSender {
         for (int i = 0; i < 10; i++) {
             long time = System.nanoTime();
             rabbitTemplate.convertAndSend("msg", "第 " + i + "次发送的时间：" + time);
-            stringBuilder.append(time + "<br>");
+            stringBuilder.append(time).append("<br>");
         }
         return stringBuilder.toString();
     }
